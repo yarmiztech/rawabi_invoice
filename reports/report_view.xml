@@ -1,0 +1,950 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+<!--    <template id="assets_backend" name="account assets" inherit_id="web.assets_backend">-->
+<!--        <xpath expr="." position="inside">-->
+<!--            <link rel="stylesheet" href="manbainvoice/static/src/scss/style.scss"/>-->
+<!--        </xpath>-->
+<!--    </template>-->
+    <template id="invoice_format_layout2">
+        <t t-call="web.html_container">
+            <t t-if="not o" t-set="o" t-value="doc"/>
+            <t t-if="not company">
+                <!--  Multicompany  -->
+                <t t-if="company_id">
+                    <t t-set="company" t-value="company_id"/>
+                </t>
+                <t t-elif="o and 'company_id' in o">
+                    <t t-set="company" t-value="o.company_id.sudo()"/>
+                </t>
+                <t t-else="else">
+                    <t t-set="company" t-value="res_company"/>
+                </t>
+            </t>
+            <div class="header" t-att-style="report_header_style">
+                <div class="row">
+<!--                    <div class="col-4" style="text-align:left;">-->
+<!--                        &lt;!&ndash;            <h6>CIN: </h6>&ndash;&gt;-->
+<!--                        &lt;!&ndash;            <h6>GSTIN: <t t-esc="company.vat"/>  </h6>&ndash;&gt;-->
+<!--                        <h6>-->
+<!--                            <b>-->
+<!--                                <t t-esc="company.name"/>-->
+<!--                            </b>-->
+<!--                        </h6>-->
+<!--                        <h6>-->
+<!--                            <b><t t-esc="company.street"/>,-->
+<!--                                <t t-esc="company.street2"/>-->
+<!--                            </b>-->
+<!--                        </h6>-->
+<!--                        <h6>-->
+<!--                            <b><t t-esc="company.city"/>,<t t-esc="company.state_id.name"/>- -->
+<!--                                <t t-esc="company.zip"/>-->
+<!--                            </b>-->
+<!--                        </h6>-->
+<!--                        <h6>-->
+<!--                            <b>-->
+<!--                                <t t-esc="company.phone"/>-->
+<!--                            </b>-->
+<!--                        </h6>-->
+<!--                        <h6>-->
+<!--                            <b>-->
+<!--                                <t t-esc="company.email"/>-->
+<!--                            </b>-->
+<!--                        </h6>-->
+
+
+<!--                    </div>-->
+                    <div class="col-3" style="text-align:left;">
+
+                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)"
+                             style="max-height:120px;align:center;" alt="Logo"/>
+                    </div>
+<!--                                        <div class="col-4" style="text-align:center;margin-top:50px;margin-left:-40px;">-->
+<!--                                                                    <h6 style="text-align:right;"><b> TAX Invoice/ فاتورة ضريبية</b></h6>-->
+
+
+
+<!--                    <table style="width:100%;">-->
+
+<!--                            <tr >-->
+<!--                                <td colspan="1" style="border: 1px solid black;"><center><b>رقم الاشعار<br></br>COC Number</b></center></td>-->
+<!--                                <td colspan="1" style="border: 1px solid black;"><center><b>رقم طلب الشراء<br></br>PO Number </b></center></td>-->
+<!--                                <td colspan="1" style="border: 1px solid black; "><center><b>تاريخ الإصدار<br></br>Issue Date</b></center></td>-->
+<!--                                <td colspan="1" style="border: 1px solid black;"><center><b>رقم الفاتورة<br></br>Invoice Number</b></center></td>-->
+<!--                            </tr>-->
+<!--                                 <tr>-->
+<!--                                     <td colspan="1" style="height:10px;width:20%;border: 1px solid black;color:red;"><center><b><br/></b></center></td>-->
+<!--                                <td colspan="1" style="border: 1px solid black;color:red;"><center><b><br/></b></center>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="border: 1px solid black;color:red;"><center><b><t t-esc="o.invoice_date_due"/></b></center></td>-->
+<!--                        <td colspan="1" style="border: 1px solid black;color:red;"><center><b><t t-esc="o.name"/></b></center></td>-->
+<!--                            </tr>-->
+<!--                             </table>-->
+<!--                                        </div>-->
+                    <div class="col-6">
+                        <h4><center>Tax Invoice/فاتورة ضريبية</center></h4>
+                    <table style="width:100%;">
+<!---->
+                            <tr >
+                                <td colspan="3" style="border: 1px solid black;"><center><b>رقم الاشعار<br></br>COC Number</b></center></td>
+                                <td colspan="3" style="border: 1px solid black;border-spacing:20px"><center><b>رقم التعميد<br></br>PO Number </b></center></td>
+                                <td colspan="3" style="border: 1px solid black; "><center><b>تاريخ الإصدار<br></br>Issue Date</b></center></td>
+                                <td colspan="2" style="border: 1px solid black;"><center><b>رقم الفاتورة<br></br>Invoice Number</b></center></td>
+                            </tr>
+                                 <tr>
+                                     <td colspan="3" style="border: 1px solid black;"><center><b><t t-esc="o.coc_number"/></b></center></td>
+                                <td colspan="3" style="border: 1px solid black;"><center><b><t t-esc="o.po_number"/></b></center>
+<!---->
+                                </td>
+                                <td colspan="3" style="border: 1px solid black;"><center><b><t t-esc="o.invoice_date_due"/></b></center></td>
+                        <td colspan="2" style="border: 1px solid black;"><center><b><t t-esc="o.name"/></b></center></td>
+                            </tr>
+</table>
+                    </div>
+                    <div class="col-3" style="text-align:left;">
+                                                            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', o.testing(), 200, 200)" style="width:180px;height:200px" />
+
+<!--                                                                <img t-if="o.name" t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', o.name, 600, 150)" style="width:100%;height:20%;"/>-->
+                    </div>
+
+<!--                        <h6>-->
+<!--                            <b>-->
+<!--                                <t t-esc="company.ar_name"/>-->
+<!--                            </b>-->
+<!--                        </h6>-->
+<!--                        <h6>-->
+<!--                            <b><t t-esc="company.ar_street"/>,-->
+<!--                                <t t-esc="company.ar_street2"/>-->
+<!--                            </b>-->
+<!--                        </h6>-->
+<!--                        <h6>-->
+<!--                            <b><t t-esc="company.ar_city"/>,-->
+<!--                                <t t-esc="company.ar_state"/>-->
+<!--                                <t t-esc="company.ar_zip"/>-->
+<!--                            </b>-->
+<!--                        </h6>-->
+<!--                        <h6>-->
+<!--                            <b>-->
+<!--                                <t t-esc="company.ar_phone"/>-->
+<!--                            </b>-->
+<!--                        </h6>-->
+                        <!--            <h6><t t-esc="company.email"/> </h6>-->
+<!--                    </div>-->
+
+                    <!--         <div class="col-4" style="text-align:right;">-->
+                    <!--            <h6>CIN: </h6>-->
+                    <!--            <h6>GSTIN: <t t-esc="company.vat"/>  </h6>-->
+                    <!--&lt;!&ndash;            <h6><t t-esc="company.partner_id.name"/> </h6>&ndash;&gt;-->
+                    <!--            <h6><t t-esc="company.street"/>,<t t-esc="company.street2"/> </h6>-->
+                    <!--            <h6><t t-esc="company.city"/>,<t t-esc="company.state_id.name"/>-<t t-esc="company.zip"/> </h6>-->
+                    <!--            <h6>t:<t t-esc="company.phone"/> </h6>-->
+                    <!--            <h6><t t-esc="company.email"/> </h6>-->
+
+
+                    <!--        </div>-->
+                    <!--<div class="col-6" >-->
+
+                    <!--       <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height:70px;align:center;" alt="Logo"/>-->
+                    <!--    </div>-->
+                    <!--        <div class="col-6" >-->
+
+                    <!--            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', o.testing(), 200, 200)" style="width:100px;height:100px" align="right"/>-->
+
+
+                    <!--&lt;!&ndash;       <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height:70px;align:center;" alt="Logo"/>&ndash;&gt;-->
+                    <!--    </div>-->
+
+                    <!--        <div class="col-4" style="text-align:right;">-->
+                    <!--            <h6>CIN: </h6>-->
+                    <!--            <h6>GSTIN: <t t-esc="company.vat"/>  </h6>-->
+                    <!--&lt;!&ndash;            <h6><t t-esc="company.partner_id.name"/> </h6>&ndash;&gt;-->
+                    <!--            <h6><t t-esc="company.street"/>,<t t-esc="company.street2"/> </h6>-->
+                    <!--            <h6><t t-esc="company.city"/>,<t t-esc="company.state_id.name"/>-<t t-esc="company.zip"/> </h6>-->
+                    <!--            <h6>t:<t t-esc="company.phone"/> </h6>-->
+                    <!--            <h6><t t-esc="company.email"/> </h6>-->
+
+
+                    <!--        </div>-->
+
+                    <!--        <div class="col-6" style="text-align:right;">-->
+                    <!--            <h6><t t-esc="company.partner_id.name"/> </h6>-->
+                    <!--            <h6><t t-esc="company.street"/> </h6>-->
+                    <!--            <h6><t t-esc="company.street2"/> </h6>-->
+                    <!--            <h6><t t-esc="company.city"/> </h6>-->
+                    <!--            <h6><t t-esc="company.state_id.name"/> </h6>-->
+                    <!--            <h6><t t-esc="company.zip"/> </h6>-->
+
+
+                    <!--        </div>-->
+                    <!---->
+                </div>
+            </div>
+            <div class="col-9 text-right" style="margin-top:22px;" t-field="company.report_header" name="moto">
+                <div t-field="company.partner_id"
+                     t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'/>
+            </div>
+            <div class="article" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id"
+                 t-att-data-oe-lang="o and o.env.context.get('lang')">
+                <t t-raw="0"/>
+            </div>
+            <div class="footer o_background_footer">
+                <div>
+                    <div t-field="company.report_footer"/>
+                    <div t-if="report_type == 'pdf'" class="text-muted">
+                        <hr style="text-color:orange; width:100%;"></hr>
+                        <div class="row">
+                            <div class="col-6" >
+                                <h6 style="text-align:left;"><b>BANK INFORMATION </b></h6>
+
+<!--                                <h6 style="font-size: 22px;">-->
+<!--                                    <b>-->
+<!--                                                                                <t t-esc="company.ar_country"/>-Mob:<t t-esc="company.ar_phone"/>-<t t-esc="company.street"/><t t-esc="company.street2"/><t t-esc="company.ar_city"/>-<t t-esc="company.ar_state"/><t t-esc="company.ar_zip"/>,-->
+
+<!--                                        <t t-esc="company.country_id.ar_name"/>,<t t-esc="company.ar_street"/>,<t t-esc="company.ar_street2"/>,<t t-esc="company.ar_city"/>,<t t-esc="company.ar_state"/>,<t t-esc="company.ar_zip"/>, <t t-esc="company.ar_phone"/>,-->
+<!--                                    </b>-->
+<!--                                </h6>-->
+<!--                                <h6>-->
+<!--                                    <b>-->
+<!--                                    </b>-->
+<!--                                </h6>-->
+<!--                                <h6>-->
+<!--                                    <b>-->
+
+<!--                                    </b>-->
+<!--                                </h6>-->
+<!--                                <h6>-->
+<!--                                    <b>-->
+
+<!--                                    </b>-->
+<!--                                </h6>-->
+                            </div>
+<!--                        </div>-->
+<!--                        <div class="row">-->
+                            <div class="col-6" >
+                                                                <h6 style="text-align:right;"><b>البنكيةالمعلومات</b></h6>
+
+                                <!--
+                                <!-           <h6>CIN: </h6>-->
+                                <!--            <h6>GSTIN: <t t-esc="company.vat"/>  </h6>-->
+<!--                                <h6 style="font-size: 28px;">-->
+<!--                                    <b>-->
+<!--                                        <t t-esc="company.country_id.name"/>-Mob:<t t-esc="company.phone"/>-<t t-esc="company.street"/><t t-esc="company.street2"/><t t-esc="company.city"/>-<t t-esc="company.state_id.name"/><t t-esc="company.zip"/>,-->
+<!--                                    </b>-->
+<!--                                </h6>-->
+<!--                                <h6>-->
+<!--                                    <b>-->
+<!--                                    </b>-->
+<!--&lt;!&ndash;                                </h6>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <h6>&ndash;&gt;-->
+<!--                                    <b>-->
+<!--                                    </b>-->
+<!--&lt;!&ndash;                                </h6>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <h6>&ndash;&gt;-->
+<!--                                    <b>-->
+<!--                                        -->
+<!--                                    </b>-->
+<!--&lt;!&ndash;                                </h6>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <h6>&ndash;&gt;-->
+<!--                                    <b>-->
+<!--                                        -->
+<!--                                    </b>-->
+<!--                                </h6>-->
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6" >
+                                <h6 style="text-align:center;"><b><t t-esc="o.partner_bank_id.acc_holder_name"/> </b></h6>
+                                <h6 style="text-align:center;"><b><t t-esc="o.partner_bank_id.bank_id.name"/> </b></h6>
+                                <h6 style="text-align:center;"><b>IBAN:SA<t t-esc="o.partner_bank_id.bank_id.code"/> </b></h6>
+
+<!--                                <h6 style="font-size: 22px;">-->
+<!--                                    <b>-->
+<!--                                                                                <t t-esc="company.ar_country"/>-Mob:<t t-esc="company.ar_phone"/>-<t t-esc="company.street"/><t t-esc="company.street2"/><t t-esc="company.ar_city"/>-<t t-esc="company.ar_state"/><t t-esc="company.ar_zip"/>,-->
+
+<!--                                        <t t-esc="company.country_id.ar_name"/>,<t t-esc="company.ar_street"/>,<t t-esc="company.ar_street2"/>,<t t-esc="company.ar_city"/>,<t t-esc="company.ar_state"/>,<t t-esc="company.ar_zip"/>, <t t-esc="company.ar_phone"/>,-->
+<!--                                    </b>-->
+<!--                                </h6>-->
+<!--                                <h6>-->
+<!--                                    <b>-->
+<!--                                    </b>-->
+<!--                                </h6>-->
+<!--                                <h6>-->
+<!--                                    <b>-->
+
+<!--                                    </b>-->
+<!--                                </h6>-->
+<!--                                <h6>-->
+<!--                                    <b>-->
+
+<!--                                    </b>-->
+<!--                                </h6>-->
+                            </div>
+<!--                        </div>-->
+<!--                        <div class="row">-->
+                            <div class="col-6" >
+                                                                <h6 style="text-align:center;"><b><t t-esc="o.computear_holdername()"/></b></h6>
+                                                                <h6 style="text-align:center;"><b><t t-esc="o.computear_bankname()"/></b></h6>
+                                                                <h6 style="text-align:center;"><b><t t-esc="o.computear_bankcode()"/></b></h6>
+
+                                <!--
+                                <!-           <h6>CIN: </h6>-->
+                                <!--            <h6>GSTIN: <t t-esc="company.vat"/>  </h6>-->
+<!--                                <h6 style="font-size: 28px;">-->
+<!--                                    <b>-->
+<!--                                        <t t-esc="company.country_id.name"/>-Mob:<t t-esc="company.phone"/>-<t t-esc="company.street"/><t t-esc="company.street2"/><t t-esc="company.city"/>-<t t-esc="company.state_id.name"/><t t-esc="company.zip"/>,-->
+<!--                                    </b>-->
+<!--                                </h6>-->
+<!--                                <h6>-->
+<!--                                    <b>-->
+<!--                                    </b>-->
+<!--&lt;!&ndash;                                </h6>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <h6>&ndash;&gt;-->
+<!--                                    <b>-->
+<!--                                    </b>-->
+<!--&lt;!&ndash;                                </h6>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <h6>&ndash;&gt;-->
+<!--                                    <b>-->
+<!--                                        -->
+<!--                                    </b>-->
+<!--&lt;!&ndash;                                </h6>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <h6>&ndash;&gt;-->
+<!--                                    <b>-->
+<!--                                        -->
+<!--                                    </b>-->
+<!--                                </h6>-->
+                            </div>
+                        </div>
+<!--                            </div>-->
+<!--                            <div class="row">-->
+<!--                            <div class="col-12" style="text-align:left;">-->
+
+
+
+                                <!--        </div>-->
+                                <!--<div class="col-4" style="text-align:center;">-->
+
+                                <!--       <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height:70px;align:center;" alt="Logo"/>-->
+                                <!--    </div>-->
+                                <!--        <div class="col-4" style="text-align:right;">-->
+<!--                                    <h6>
+<!-</h6>-->
+<!--                            </div>-->
+<!--                            </div>-->
+
+
+                            <!--            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', o.testing(), 200, 200)" style="width:100px;height:100px" align="right"/>-->
+
+
+                            <!--       <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height:70px;align:center;" alt="Logo"/>-->
+                            <!--    </div>-->
+
+                            <!--        <div class="col-4" style="text-align:right;">-->
+                            <!--            <h6>CIN: </h6>-->
+                            <!--            <h6>GSTIN: <t t-esc="company.vat"/>  </h6>-->
+                            <!--&lt;!&ndash;            <h6><t t-esc="company.partner_id.name"/> </h6>&ndash;&gt;-->
+                            <!--            <h6><t t-esc="company.street"/>,<t t-esc="company.street2"/> </h6>-->
+                            <!--            <h6><t t-esc="company.city"/>,<t t-esc="company.state_id.name"/>-<t t-esc="company.zip"/> </h6>-->
+                            <!--            <h6>t:<t t-esc="company.phone"/> </h6>-->
+                            <!--            <h6><t t-esc="company.email"/> </h6>-->
+
+
+                            <!--     <div class="row">-->
+                            <!--        <div class="col-6" style="text-align:right;">-->
+                            <!--                        Page:-->
+                            <!--                <span class="page"/>-->
+                            <!--                         /-->
+                            <!--                 <span class="topage"/>-->
+                            <!--        </div>-->
+                            <!--        <div class="col-6" style="text-align:right;">-->
+                            <!--            <span style="color:gray;"> Powered by Enzapps</span>-->
+                            <!--        </div>-->
+                            <!--    </div>-->
+<!--                        </div>-->
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    <template id="invoice_format_view2">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+
+                <t t-call="tam.invoice_format_layout2">
+                    <div class="page">
+<!--                        <table-->
+
+
+
+<!--                        <br></br>-->
+<!--                        <table style="width:100%;">-->
+<!--                                    <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!--Vendor</b>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!--المورد </b>-->
+
+<!--                                </td>-->
+<!--                                    </tr>-->
+<!--                            <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:20px;padding-below:40px;"><b>-->
+<!--</b>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="height:10px;text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:10px;padding-below:40px;"><b>-->
+<!-- </b>-->
+
+<!--                                </td>-->
+<!--                                    </tr>-->
+<!--                            <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:20px;padding-below:40px;">-->
+<!--Tam Development-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:20px;padding-below:40px;">شركة تام التنموية المحدودة-->
+
+
+<!--                                </td>-->
+<!--                                    </tr>-->
+<!--                                                     <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!--</b>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="height:10px;text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!-- </b>-->
+
+<!--                                </td>-->
+<!--                                    </tr>-->
+<!--                            <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:20px;">-->
+<!--VAT Number:<t t-esc="o.company_id.vat"/>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:20px;"> الرقم الضريبي  :<t t-esc="o.company_id.ar_tax_id"/>-->
+
+
+<!--                                </td>-->
+<!--                                    </tr>-->
+<!--                                                     <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!--</b>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="height:10px;text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!-- </b>-->
+
+<!--                                </td>-->
+<!--                                    </tr>-->
+<!--                            <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:20px;">-->
+<!--Address:<t t-esc="o.company_id.street"/><t t-esc="o.company_id.street2"/>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:20px;"><t t-esc="o.company_id.ar_street2"/>,<t t-esc="o.company_id.ar_street"/><span>:</span>عنوان</td>-->
+<!--                                    </tr>-->
+<!--                                                     <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!--</b>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="height:10px;text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!-- </b>-->
+
+<!--                                </td>-->
+<!--                                    </tr>-->
+<!--                                                           <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;"><b>-->
+<!--Client</b>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;"><b>العميل-->
+<!-- </b>-->
+
+<!--                                </td>-->
+<!--                                    </tr>-->
+<!--                                                     <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!--</b>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="height:10px;text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!-- </b>-->
+
+<!--                                </td>-->
+<!--                                    </tr>-->
+<!--                                                      <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:20px;">-->
+<!--Client Name:<t t-esc="o.partner_id.name"/>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:20px;">اسم العميل:<t t-esc="o.partner_id.ar_name"/>-->
+
+
+<!--                                </td>-->
+<!--                                    </tr>-->
+<!--                                                     <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!--</b>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="height:10px;text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!-- </b>-->
+
+<!--                                </td>-->
+<!--                                    </tr>-->
+<!--                            <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:20px;">-->
+<!--VAT Number:<t t-esc="o.partner_id.vat"/>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:20px;">الرقم الضريبي:<t t-esc="o.partner_id.ar_tax_id"/>-->
+
+
+<!--                                </td>-->
+<!--                                    </tr>-->
+<!--                                                     <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!--</b>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="height:10px;text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!-- </b>-->
+
+<!--                                </td>-->
+<!--                                    </tr>-->
+<!--                            <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:20px;">-->
+<!--Adreess:<t t-esc="o.partner_id.street"/><t t-esc="o.partner_id.street2"/>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:20px;"><b>عنوان:<t t-esc="o.partner_id.ar_street"/><t t-esc="o.partner_id.ar_street2"/></b>-->
+
+<!--                                </td>-->
+<!--                                    </tr>-->
+<!--                                                     <tr >-->
+<!--                                <td colspan="1" style="height:10px;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!--</b>-->
+
+<!--                                </td>-->
+<!--                                <td colspan="1" style="height:10px;text-align:right;border: 1px solid black;border-right:0px;border-left:0px;border-top:0px;border-bottom:0px;font-size:30px;padding-below:40px;"><b>-->
+<!-- </b>-->
+
+<!--                                </td>-->
+<!--                                    </tr>-->
+<!--                        </table>-->
+                        <table style="width:100%">
+                            <tr>
+                                <td colspan="3" style="font-size:30px"><b>Vendor</b></td>
+                                <td colspan="4" style="text-align:right;font-size:30px"><b>المورد</b></td>
+                            </tr>
+                             <tr>
+                                <td colspan="3"><t t-esc="o.company_id.name"/></td>
+                                <td colspan="4" style="text-align:right;"><t t-esc="o.company_id.ar_name"/></td>
+                            </tr>
+                             <tr>
+                                <td colspan="3"><b>VAT Number:</b><t t-esc="o.company_id.vat"/> </td>
+                                 <td colspan="4" style="text-align:right;"><b>الرقم الضريبي:</b><t t-esc="o.company_id.ar_tax_id"/></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3"><b>Address:</b><t t-esc="o.company_id.street"/>,<t t-esc="o.company_id.street2"/> </td>
+                                <td colspan="3" style="text-align:right;"><t t-esc="o.company_id.ar_street2"/>,<t t-esc="o.company_id.ar_street"/></td>
+                                <td colspan="1" style="text-align:right;"><t t-esc="o.company_id.ar_street2"/>,<t t-esc="o.company_id.ar_street"/><b>العنوان:</b></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="font-size:30px"><b>Client</b></td>
+                                <td colspan="4" style="font-size:30px;text-align:right;"><b>العميل</b></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3"><t t-esc="o.partner_id.name"/></td>
+                                <td colspan="4" style="text-align:right;"><t t-esc="o.partner_id.ar_name"/></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3"><b>VAT Number</b>:<t t-esc="o.partner_id.vat"/> </td>
+                                <td colspan="4" style="text-align:right;"><b>الرقم الضريبي:</b><t t-esc="o.partner_id.ar_tax_id"/></td>
+                            </tr>
+                        </table>
+                                           <table style="width:100%;">
+                                    <tr >
+                                <td colspan="1" style="width:30%;height:10px;border: 1px solid black;border-collapse: collapse;text-align:left;border: 1px solid black;font-size:20px;">
+Project Name
+
+                                </td>
+                                <td colspan="5" style="border: 1px solid black;border-collapse: collapse;text-align:center;border: 1px solid black;font-size:20px;color:red;"><t t-esc="o.project_name"/>
+
+                                                               </td>
+                                <td colspan="1" style="width:50%;border: 1px solid black;border-collapse: collapse;text-align:right;border: 1px solid black;font-size:20px;">اسم المشروع
+
+
+                                </td>
+                                           </tr>
+                                               <tr >
+                                <td colspan="1" style="border: 1px solid black;border-collapse: collapse;height:10px;text-align:left;border: 1px solid black;font-size:20px;">
+Payment Percentage
+
+                                </td>
+                                <td colspan="5" style="border: 1px solid black;border-collapse: collapse;text-align:center;border: 1px solid black;font-size:20px;color:red;"><t t-esc="o.payment_percentage"/>
+
+                                                               </td>
+                                <td colspan="1" style="border: 1px solid black;border-collapse: collapse;text-align:right;border: 1px solid black;font-size:20px;">نسبة الدفع
+
+
+                                </td>
+                                           </tr>
+                                               <tr >
+                                <td colspan="1" style="border: 1px solid black;border-collapse: collapse;height:10px;text-align:left;border: 1px solid black;font-size:20px;">
+Payment Number
+
+                                </td>
+                                <td colspan="5" style="border: 1px solid black;border-collapse: collapse;text-align:center;border: 1px solid black;font-size:20px;color:red;"><t t-esc="o.payment_number"/>
+
+                                                               </td>
+                                <td colspan="1" style="border: 1px solid black;border-collapse: collapse;text-align:right;border: 1px solid black;font-size:20px;">رقم الدفع
+
+
+                                </td>
+                                           </tr>
+                                                   <tr>
+                                <td colspan="1" style="height:30px;border: 1px solid black;border-top:0px;border-bottom:0px;border-left:0px;border-right:0px;">
+                                </td>
+                        <td colspan="5" style="height:30px;border: 1px solid black;border-top:0px;border-bottom:0px;border-left:0px;border-right:0px;">
+
+
+                                </td>
+                                                       <td colspan="1" style="height:30px;border: 1px solid black;border-top:0px;border-bottom:0px;border-left:0px;border-right:0px;">
+
+
+                                </td>
+                              </tr>
+<!--                        </table>-->
+<!--                        <br></br>-->
+<!--                         <table style="width:100%;">-->
+<!--                                 <tr>-->
+                                <tr>
+                                <td colspan="1" style="height:20px;border: 1px solid black;"><center><b>الإجمالي شامل الضريبة</b><br></br><b>TOTAL INCLUDING TAX</b></center>
+                                </td>
+                        <td colspan="1" style="border: 1px solid black;"><center><b>قيمة الضريبة</b><br></br><b>TAX AMOUNT</b></center>
+                                </td>
+<!--                            Date</b>-->
+<!--                                </td>-->
+<!--                        <td colspan="10" style="text-align:left;border: 1px solid black;border-right:0px;border-left:0px;">Total<br></br>-->
+<!--Routing-->
+<!--                                </td>-->
+                                                <td colspan="1" style="border: 1px solid black;"><center><b>معدل الضريبة</b><br></br><b>TAX RATE</b></center>
+
+                                </td>
+<!--                                </td>&ndash;&gt;-->
+                                                <td colspan="1" style="border: 1px solid black;"><center><b>المبلغ الخاضع للضريبة</b><br></br><b>TAXABLE <br></br>AMOUNT</b></center>
+
+                                </td>
+                                                     <td colspan="1" style="border: 1px solid black;"><center><b>كمية</b><br></br><b>QUANTITY</b></center>
+
+                                </td>
+                                         <td colspan="1" style="border: 1px solid black;"><center><b>سعر الوحدة</b><br></br><b>UNIT <br></br>PRICE</b></center>
+
+                                </td>
+                                                 <td colspan="1" style="border: 1px solid black;"><center><b>طبيعة الخدمة أو المنتج</b><br></br><b>NATURE  OF SERVICE OR PRODUCT</b></center>
+
+                                </td>
+<!--                           <td colspan="10" style="width:20%;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;">-->
+
+<!--                                </td>-->
+<!--                                                              <td colspan="10" style="width:20%;text-align:left;border: 1px solid black;border-right:0px;border-left:0px;">-->
+
+<!--                                </td>-->
+<!--&lt;!&ndash;                        <td colspan="2" style="width:10%;text-align:center;border: 1px solid black;border-left:0px;border-right:0px;">Fare&ndash;&gt;-->
+
+<!--&lt;!&ndash;                                </td>&ndash;&gt;-->
+<!--                                    <td colspan="2" style="width:10%;text-align:center;border: 1px solid black;border-left:0px;border-right:0px;"><center><b>Fare</b></center>-->
+
+<!--                                </td>-->
+<!--                                    <td colspan="2" style="width:10%;text-align:center;border: 1px solid black;border-right:0px;border-left:0px;"><center><b>Vat %</b></center>-->
+<!--                                </td>-->
+<!--                        <td colspan="2" style="width:10%;text-align:center;border: 1px solid black;border-left:0px;border-right:0px;"><center><b>Vat<br></br>المجموع-->
+<!--                            Amt</b></center>-->
+<!--                                </td>-->
+<!--                                    <td colspan="2" style="width:10%;text-align:center;border: 1px solid black;border-left:0px;"><center><b>Amount</b></center>-->
+<!--                                </td>-->
+
+                                 </tr>
+                        <t t-foreach="o.invoice_line_ids" t-as="m">
+                       <tr>
+                                <td colspan="1" style="height:20px;border: 1px solid black;"><center><b><t t-esc="m.total_including()"/></b></center>
+                                </td>
+                        <td colspan="1" style="border: 1px solid black;"><center><b><t t-esc="m.tax_amount()"/></b></center>
+                                </td>
+<!--                            Date</b>-->
+<!--                                </td>-->
+<!--                        <td colspan="10" style="text-align:left;border: 1px solid black;border-right:0px;border-left:0px;">Total<br></br>-->
+<!--Routing-->
+<!--                                </td>-->
+                                                <td colspan="1" style="border: 1px solid black;"><center><b><t t-esc="m.tax_rate()"/></b></center>
+
+                                </td>
+<!--                                </td>&ndash;&gt;-->
+                           <td colspan="1" style="border: 1px solid black;"><center><b><t t-esc="m.price_subtotal"/></b></center>
+                                </td>
+                                                     <td colspan="1" style="border: 1px solid black;"><center><b><t t-esc="m.quantity"/></b></center>
+
+                                </td>
+                                         <td colspan="1" style="border: 1px solid black;"><center><b><t t-esc="m.price_unit"/></b></center>
+
+                                </td>
+                                                 <td colspan="1" style="border: 1px solid black;"><center><b><t t-esc="m.product_id.name"/></b></center>
+
+                                </td>
+
+                                 </tr>
+                        </t>
+                              <tr>
+                                <td colspan="1" style="height:20px;border: 1px solid black;"><center><b><t t-esc="o.amount_untaxed"/></b></center>
+                                </td>
+                        <td colspan="6" style="height:20px;border: 1px solid black;"><center><b>المجموع غير شامل ضريبة القيمة المضافة
+                        <br></br>Total(Excluding VAT)</b></center>
+                                </td>
+                              </tr>
+                             <tr>
+                                <td colspan="1" style="height:20px;border: 1px solid black;"><center><b><t t-esc="o.amount_tax"/></b></center>
+                                </td>
+                        <td colspan="6" style="height:20px;border: 1px solid black;"><center><b>إجمالي ضريبة القيمة المضافة (15٪)
+                            <br></br>(15%)Total VAT</b></center>
+
+                                </td>
+                              </tr>
+                             <tr>
+                                <td colspan="1" style="height:20px;border: 1px solid black;"><center><b><t t-esc="o.amount_residual"/></b></center>
+                                </td>
+                        <td colspan="6" style="height:20px;border: 1px solid black;"><center><b>إجمالي المبلغ المستحق
+
+                        <br></br>Total Amount Due</b></center>
+                                </td>
+                              </tr>
+                             <tr>
+                                <td colspan="1" style="height:30px;border: 1px solid black;border-top:0px;border-bottom:0px;border-left:0px;border-right:0px;">
+                                </td>
+                        <td colspan="6" style="height:30px;border: 1px solid black;border-top:0px;border-bottom:0px;border-left:0px;border-right:0px;">
+
+
+                                </td>
+                              </tr>
+                                 <tr>
+                                <td colspan="1" style="height:20px;border: 1px solid black;"><center><b>ريال سعودى</b></center>
+                                </td>
+                        <td colspan="6" style="height:20px;border: 1px solid black;"><center><b>
+
+                           المبلغ بالحروف</b></center>
+                                </td>
+                              </tr>
+                             <tr>
+                                <td colspan="1" style="height:20px;border: 1px solid black;"><center><b><t t-esc="o.amount_words()"/></b></center>
+                                </td>
+                                 <td colspan="6" style="height:20px;border: 1px solid black;font-size:30px;"><center><b>Amount in words</b></center>
+
+
+                                </td>
+                              </tr>
+                         </table>
+
+<!--                                &lt;!&ndash;                                            <td&ndash;&gt;-->
+<!--                            </tr>-->
+
+
+<!--                        </table>-->
+<!--                        <div class="row">-->
+<!--                            <div class="col-5" style="border: 1px solid black;-->
+<!--  padding: 50px;-->
+<!--  border-radius: 15px;align:left;">-->
+<!--                                &lt;!&ndash;            <h6>CIN: </h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;            <h6>GSTIN: <t t-esc="company.vat"/>  </h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;             <h6><b><t t-esc="company.name"/></b></h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;             <h6><b><t t-esc="company.street"/>,<t t-esc="company.street2"/></b></h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;             <h6><b><t t-esc="company.city"/>,<t t-esc="company.state_id.name"/>-<t t-esc="company.zip"/> </b></h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;             <h6><b><t t-esc="company.phone"/> </b></h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;             <h6><b><t t-esc="company.email"/> </b></h6>&ndash;&gt;-->
+
+
+<!--                            </div>-->
+<!--                            <div class="col-2"-->
+<!--                                 style="align:center;">-->
+<!--                                &lt;!&ndash;            <h6>CIN: </h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;            <h6>GSTIN: <t t-esc="company.vat"/>  </h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;             <h6><b><t t-esc="company.name"/></b></h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;             <h6><b><t t-esc="company.street"/>,<t t-esc="company.street2"/></b></h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;             <h6><b><t t-esc="company.city"/>,<t t-esc="company.state_id.name"/>-<t t-esc="company.zip"/> </b></h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;             <h6><b><t t-esc="company.phone"/> </b></h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;             <h6><b><t t-esc="company.email"/> </b></h6>&ndash;&gt;-->
+
+
+<!--                            </div>-->
+<!--                            <div class="col-5"-->
+<!--                                 style="border: 1px solid black;padding: 50px;border-radius: 15px;align:right;">-->
+
+<!--                                &lt;!&ndash;       <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height:70px;align:center;" alt="Logo"/>&ndash;&gt;-->
+<!--                                &lt;!&ndash;    </div>&ndash;&gt;-->
+<!--                                &lt;!&ndash;        <div class="col-4" style="text-align:right;">&ndash;&gt;-->
+<!--                                &lt;!&ndash;            <h6><b><t t-esc="company.ar_name"/> </b></h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;            <h6><b><t t-esc="company.ar_street"/>,<t t-esc="company.ar_street2"/> </b></h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;            <h6><b><t t-esc="company.ar_city"/>,<t t-esc="company.ar_state"/><t t-esc="company.ar_zip"/></b> </h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;            <h6><b><t t-esc="company.ar_phone"/> </b></h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;&lt;!&ndash;            <h6><t t-esc="company.email"/> </h6>&ndash;&gt;&ndash;&gt;-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <br></br>-->
+<!--                        <div class="row">-->
+<!--                            <div class="col-12" style="border: 1px solid black;padding: 50px;border-radius: 15px;">-->
+
+<!--                                &lt;!&ndash;       <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height:70px;align:center;" alt="Logo"/>&ndash;&gt;-->
+<!--                                &lt;!&ndash;    </div>&ndash;&gt;-->
+<!--                                &lt;!&ndash;        <div class="col-4" style="text-align:right;">&ndash;&gt;-->
+<!--                                &lt;!&ndash;            <h6><b><t t-esc="company.ar_name"/> </b></h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;            <h6><b><t t-esc="company.ar_street"/>,<t t-esc="company.ar_street2"/> </b></h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;            <h6><b><t t-esc="company.ar_city"/>,<t t-esc="company.ar_state"/><t t-esc="company.ar_zip"/></b> </h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;            <h6><b><t t-esc="company.ar_phone"/> </b></h6>&ndash;&gt;-->
+<!--                                &lt;!&ndash;&lt;!&ndash;            <h6><t t-esc="company.email"/> </h6>&ndash;&gt;&ndash;&gt;-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <br></br>-->
+
+
+
+<!--                        <table style="width:100%;border-radius: 10px;" class="table.roundedCorners">-->
+
+<!--                            <tr style="border-bottom: none;">-->
+<!--                                <td colspan="1" style="border-radius: 15px;width:10%;height:10px;border: 1px solid black;-->
+<!--  padding: 10px;  ">-->
+<!--                                    <center>SSO معرف </center>-->
+<!--                                </td>-->
+
+<!--                                <td colspan="1" style="width:10%;border: 1px solid black;-->
+<!--  padding: 10px; ">-->
+<!--                                    <center>CODE الشفرة</center>-->
+<!--                                </td>-->
+<!--                                <td colspan="4" style="width:50%;height:10px;border: 1px solid black;-->
+<!--  padding: 10px; ">-->
+<!--                                    <center>DESCRIPTION وصف</center>-->
+<!--                                </td>-->
+
+<!--                                <td colspan="1" style="width:10%;text-align:right;border: 1px solid black;-->
+<!--  padding: 10px; ">-->
+<!--                                    <center>QTY الكمية</center>-->
+<!--                                </td>-->
+<!--                                <td colspan="2" style="width:10%;border: 1px solid black;-->
+<!--  padding: 10px; ">-->
+<!--                                    <center>UNIT PRICE سعر الوحدة</center>-->
+<!--                                </td>-->
+<!--                                <td colspan="3" style="width:10%;border: 1px solid black;border-top-right-radius: 10px;-->
+<!--  padding: 10px; ">-->
+<!--                                    <center>AMOUNT كمية</center>-->
+<!--                                </td>-->
+<!--                            </tr>-->
+<!--                            <t t-foreach="o.invoice_line_ids" t-as="m">-->
+<!--                                <tr style="border-bottom: none;">-->
+<!--                                    <td colspan="1" style="border: 1px solid black;border-bottom:0px;-->
+<!--  padding: 10px; ">-->
+<!--                                        <center></center>-->
+<!--                                    </td>-->
+<!--                                    <td colspan="1" style="border: 1px solid black;border-bottom:0px;-->
+<!--  padding: 10px; ">-->
+<!--                                        <center></center>-->
+<!--                                    </td>-->
+<!--                                    <td colspan="4" style="border: 1px solid black;border-bottom:0px;-->
+<!--  padding: 10px; ">-->
+<!--                                        <center>-->
+<!--                                            <b>-->
+<!--                                                <t t-esc="m.product_id.name"/>-->
+<!--                                            </b>-->
+<!--                                        </center>-->
+<!--                                    </td>-->
+<!--                                    <td colspan="1" style="border: 1px solid black;border-bottom:0px;-->
+<!--  padding: 10px; ">-->
+<!--                                        <center>-->
+<!--                                            <t t-esc="m.quantity"/>-->
+<!--                                        </center>-->
+<!--                                    </td>-->
+<!--                                    &lt;!&ndash;                                            <td colspan="1" style="border: 1px solid black;border-bottom:0px;"><center><b><t t-esc="m.tax()"/></b></center></td>&ndash;&gt;-->
+<!--                                    <td colspan="2" style="border: 1px solid black;border-bottom:0px;-->
+<!--  padding: 10px; ">-->
+<!--                                        <center>-->
+<!--                                            <t t-esc="m.price_unit"/>-->
+<!--                                        </center>-->
+<!--                                    </td>-->
+<!--                                    <td colspan="3" style="border: 1px solid black;border-bottom:0px;-->
+<!--  padding: 10px; ">-->
+<!--                                        <center>-->
+<!--                                            <t t-esc="m.price_subtotal"/>-->
+<!--                                        </center>-->
+<!--                                    </td>-->
+<!--                                    &lt;!&ndash;                                            <td&ndash;&gt;-->
+<!--                                </tr>-->
+<!--                            </t>-->
+<!--                            <tr>-->
+<!--                                <td colspan="7" style="border: 1px solid black;border-bottom-left-radius: 10px;-->
+<!--  padding: 10px; ">-->
+<!--                                    <center></center>-->
+<!--                                </td>-->
+<!--                                <td colspan="2" style="border: 1px solid black;-->
+<!--  padding: 10px; ">-->
+<!--                                    <center>TOTAL المجموع</center>-->
+<!--                                </td>-->
+<!--                                &lt;!&ndash;                                            <td colspan="1" style="border: 1px solid black;border-bottom:0px;"><center><b><t t-esc="m.product_id.name"/></b></center></td>&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                            <td colspan="1" style="border: 1px solid black;border-bottom:0px;"><center><t t-esc="m.quantity"/></center></td>&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                            <td colspan="1" style="border: 1px solid black;border-bottom:0px;"><center><b><t t-esc="m.tax()"/></b></center></td>&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                            <td colspan="1" style="border: 1px solid black;border-bottom:0px;"><center><t t-esc="m.price_unit()"/></center></td>&ndash;&gt;-->
+<!--                                <td colspan="3" style="border: 1px solid black; border-bottom-right-radius: 10px;-->
+<!--  padding: 10px; ">-->
+<!--                                    <center>-->
+<!--                                        <t t-esc="o.amount_untaxed"/>-->
+<!--                                    </center>-->
+<!--                                </td>-->
+<!--                                &lt;!&ndash;                                            <td&ndash;&gt;-->
+<!--                            </tr>-->
+<!--                        </table>-->
+<!--                        <br></br>-->
+<!--                            <table style="width:100%">-->
+
+<!--                            <tr>-->
+<!--                                <td colspan="4" style="height:90px;width:40%;text-align:top;border: 1px solid black; border-right:0px;-->
+<!--   ">-->
+<!--                                    ISSUED BY:-->
+<!--                                </td>-->
+<!--                                <td colspan="4" style="height:90px;width:10%;text-align:right;border: 1px solid black;border-left:0px;">صادر عن:</td>-->
+<!--                                &lt;!&ndash;                                            <td colspan="1" style="border: 1px solid black;border-bottom:0px;"><center><b><t t-esc="m.product_id.name"/></b></center></td>&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                            <td colspan="1" style="border: 1px solid black;border-bottom:0px;"><center><t t-esc="m.quantity"/></center></td>&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                            <td colspan="1" style="border: 1px solid black;border-bottom:0px;"><center><b><t t-esc="m.tax()"/></b></center></td>&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                            <td colspan="1" style="border: 1px solid black;border-bottom:0px;"><center><t t-esc="m.price_unit()"/></center></td>&ndash;&gt;-->
+<!--                                <td colspan="4" style="height:80px;text-align:left;border: 1px solid black; border-bottom-right-radius: 50px;border-right:0px;-->
+<!--  ">-->
+
+<!--                                       RECEIVED BY:-->
+
+<!--                                </td>-->
+<!--                                <td colspan="4" style="height:50px;text-align:right;border: 1px solid black;border-left:0px;">استلمت من قبل:</td>-->
+<!--                                &lt;!&ndash;                                            <td&ndash;&gt;-->
+<!--                            </tr>-->
+
+
+<!--                        </table>-->
+<!--                        <br>-->
+
+<!--                        </br>-->
+<!--                        <br></br>-->
+<!--                        <br></br>-->
+<!--                        <br></br>-->
+<!--                        <br></br>-->
+<!--                        <br></br>-->
+<!--&lt;!&ndash;                        <br></br>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <br></br>&ndash;&gt;-->
+<!--                              <div class="row">-->
+<!--         <div class="col-12" align="right">-->
+<!--                                    <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', o.testing(), 200, 200)" style="width:130px;height:130px" />-->
+<!--         </div>-->
+<!--                              </div>-->
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
